@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Resep Nusantara</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_resepku">Resepku</string>
+    <string name="nav_favorit">Favorit</string>
+    
+    <!-- Auth -->
+    <string name="login">Login</string>
+    <string name="register">Daftar</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="nama_lengkap">Nama Lengkap</string>
+    <string name="logout">Logout</string>
+    
+    <!-- Resep -->
+    <string name="judul_resep">Judul Resep</string>
+    <string name="bahan">Bahan-bahan</string>
+    <string name="langkah">Langkah Memasak</string>
+    <string name="foto">Foto</string>
+    <string name="tambah_resep">Tambah Resep</string>
+    <string name="edit_resep">Edit Resep</string>
+    <string name="hapus_resep">Hapus Resep</string>
+    <string name="simpan">Simpan</string>
+    <string name="batal">Batal</string>
+    
+    <!-- Messages -->
+    <string name="loading">Memuat data...</string>
+    <string name="empty_resep">Belum ada resep</string>
+    <string name="empty_favorit">Belum ada resep favorit</string>
+    <string name="search_hint">Cari resep...</string>
+    <string name="greeting">Halo, %s</string>
+    
+    <!-- Dialog -->
+    <string name="dialog_logout_title">Logout</string>
+    <string name="dialog_logout_message">Apakah Anda yakin ingin logout?</string>
+    <string name="dialog_delete_title">Hapus Resep</string>
+    <string name="dialog_delete_message">Apakah Anda yakin ingin menghapus resep ini?</string>
+    <string name="yes">Ya</string>
+    <string name="no">Tidak</string>
+</resources>
