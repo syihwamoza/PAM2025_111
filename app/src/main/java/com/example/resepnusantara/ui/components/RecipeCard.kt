@@ -12,8 +12,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.resepnusantara.data.model.Resep
 import com.example.resepnusantara.utils.ImageUtils
@@ -26,12 +31,15 @@ fun RecipeCard(
     isFavorite: Boolean = false,
     onFavoriteToggle: (() -> Unit)? = null
 ) {
+    val cardShape = RoundedCornerShape(24.dp)
+    
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        shape = cardShape,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFEFE5D9))
     ) {
         Column {
             Box {
@@ -40,7 +48,8 @@ fun RecipeCard(
                     contentDescription = resep.judul,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(150.dp),
+                        .height(160.dp)
+                        .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)),
                     contentScale = ContentScale.Crop
                 )
                 
@@ -49,12 +58,15 @@ fun RecipeCard(
                         onClick = { onFavoriteToggle() },
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(4.dp)
+                            .padding(8.dp)
+                            .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                            .size(36.dp)
                     ) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = if (isFavorite) "Hapus dari Favorit" else "Tambah ke Favorit",
-                            tint = if (isFavorite) Color.Red else Color.White
+                            tint = if (isFavorite) Color.Red else MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }
@@ -62,16 +74,26 @@ fun RecipeCard(
             
             Column(
                 modifier = Modifier
-                    .padding(12.dp)
+                    .padding(16.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = resep.judul,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFF5D4037), // Deep Brown
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    lineHeight = 20.sp
+                )
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                Text(
+                    text = "👩‍🍳 ${resep.username}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium
                 )
             }
         }

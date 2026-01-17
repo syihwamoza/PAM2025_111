@@ -1,19 +1,23 @@
 package com.example.resepnusantara.ui.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.SoupKitchen
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.resepnusantara.ui.components.RecipeCard
@@ -43,49 +47,54 @@ fun HomeScreen(
     var showLogoutDialog by remember { mutableStateOf(false) }
     
     if (showLogoutDialog) {
-        AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Logout") },
-            text = { Text("Apakah Anda yakin ingin logout?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    sessionManager.logout()
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }) {
-                    Text("Ya")
+        com.example.resepnusantara.ui.components.CuteDialog(
+            onDismiss = { showLogoutDialog = false },
+            onConfirm = {
+                sessionManager.logout()
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(0) { inclusive = true }
                 }
             },
-            dismissButton = {
-                TextButton(onClick = { showLogoutDialog = false }) {
-                    Text("Tidak")
-                }
-            }
+            title = "Logout?",
+            message = "Yakin nih mau keluar dari aplikasi? Nanti rindu resep-resepnya lho..",
+            confirmText = "YA",
+            dismissText = "TIDAK",
+            icon = Icons.Default.ExitToApp,
+            iconColor = MaterialTheme.colorScheme.primary
         )
     }
     
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { 
-                    Column {
-                        Text("Halo, ${sessionManager.getNamaLengkap() ?: "User"}", style = MaterialTheme.typography.titleMedium)
-                        Text("Temukan Resep Nusantaramu!", style = MaterialTheme.typography.bodySmall)
-                    }
-                },
+            com.example.resepnusantara.ui.components.CustomHeader(
+                title = "Halo, ${sessionManager.getNamaLengkap() ?: "User"}",
+                subtitle = "Cari resep nusantara versi kamu..",
+                titleIcon = Icons.Default.SoupKitchen,
                 actions = {
-                    IconButton(onClick = { showLogoutDialog = true }) {
-                        Icon(Icons.Default.ExitToApp, contentDescription = "Logout")
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .clickable { showLogoutDialog = true }
+                            .padding(end = 12.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ExitToApp, 
+                            contentDescription = "Logout", 
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Text(
+                            text = "Logout",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                }
             )
         },
+        containerColor = Color(0xFFFFF8E1), // Soft Cream
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         if (isLoading && resepList.isEmpty()) {

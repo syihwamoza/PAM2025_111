@@ -14,7 +14,7 @@ object RetrofitClient {
     // GANTI dengan IP address server Anda
     // Untuk emulator: http://10.0.2.2/
     // Untuk device fisik: http://192.168.0.113/
-    private const val BASE_URL = "http://10.0.2.2/backend/"
+    private const val BASE_URL = "http://192.168.0.113/backend/"
     
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

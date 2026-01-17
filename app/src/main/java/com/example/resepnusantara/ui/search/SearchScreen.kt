@@ -1,8 +1,11 @@
 package com.example.resepnusantara.ui.search
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -12,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,14 +41,12 @@ fun SearchScreen(
     
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Cari Resep") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+            com.example.resepnusantara.ui.components.CustomHeader(
+                title = "Cari Resep",
+                subtitle = "Temukan berbagai hidangan lezat.."
             )
-        }
+        },
+        containerColor = Color(0xFFFFF8E1) // Soft Cream
     ) { padding ->
         Column(
             modifier = Modifier
@@ -55,10 +57,16 @@ fun SearchScreen(
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                label = { Text("Cari judul atau bahan...") },
+                placeholder = { Text("Cari Resep Favoritmuu:)") },
                 modifier = Modifier.fillMaxWidth(),
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                 singleLine = true,
+                shape = RoundedCornerShape(30.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = {
                     if (query.isNotEmpty()) {
@@ -67,7 +75,7 @@ fun SearchScreen(
                 })
             )
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             
             if (isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -79,27 +87,35 @@ fun SearchScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.img_search_empty),
-                        contentDescription = null,
-                        modifier = Modifier.size(200.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            modifier = Modifier.size(50.dp),
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                        )
+                    }
                     
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     Text(
                         text = if (query.isEmpty()) "Temukan resep lezat untuk hari ini!" else "Resep tidak ditemukan",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.primary
+                        color = Color.Gray
                     )
                     
                     if (query.isEmpty()) {
                         Text(
-                            text = "Ketik judul masakan atau bahan di atas",
+                            text = "Ketik judul masakan favoritmu di atas ya.. :)",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.Gray.copy(alpha = 0.7f),
                             textAlign = TextAlign.Center
                         )
                     }

@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -25,6 +26,10 @@ import com.example.resepnusantara.data.model.UpdateResepRequest
 import com.example.resepnusantara.ui.resep.DetailViewModel
 import com.example.resepnusantara.utils.ImageUtils
 import com.example.resepnusantara.utils.SessionManager
+import com.example.resepnusantara.ui.components.CuteDialog
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Error
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,8 +53,14 @@ fun AddEditResepScreen(
     val isEdit = resepId != -1
     val isLoading by viewModel.isLoading.observeAsState(false)
     val successMessage by viewModel.successMessage.observeAsState()
-    
+    val errorMessage by viewModel.errorMessage.observeAsState()
     val existingResep by detailViewModel.resep.observeAsState()
+    
+    var showDialog by remember { mutableStateOf(false) }
+    var dialogTitle by remember { mutableStateOf("") }
+    var dialogMessage by remember { mutableStateOf("") }
+    var dialogIcon by remember { mutableStateOf(Icons.Default.Restaurant) }
+    var isSuccessAction by remember { mutableStateOf(false) }
     
     LaunchedEffect(resepId) {
         if (isEdit) {
@@ -66,10 +77,27 @@ fun AddEditResepScreen(
         }
     }
     
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            if (it.isNotEmpty()) {
+                isSuccessAction = false
+                dialogTitle = "Kesalahan"
+                dialogMessage = it
+                dialogIcon = Icons.Default.Error
+                showDialog = true
+                viewModel.clearErrorMessage()
+            }
+        }
+    }
+    
     LaunchedEffect(successMessage) {
         successMessage?.let {
             if (it.isNotEmpty()) {
-                navController.popBackStack()
+                isSuccessAction = true
+                dialogTitle = "Berhasil!"
+                dialogMessage = it
+                dialogIcon = Icons.Default.CheckCircle
+                showDialog = true
             }
         }
     }
@@ -85,20 +113,13 @@ fun AddEditResepScreen(
     
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(if (isEdit) "Edit Resep" else "Tambah Resep") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Kembali")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+            com.example.resepnusantara.ui.components.CustomHeader(
+                title = if (isEdit) "Edit Resep" else "Tambah Resep",
+                navigationIcon = Icons.Default.ArrowBack,
+                onNavigationClick = { navController.popBackStack() }
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -113,7 +134,9 @@ fun AddEditResepScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp),
-                onClick = { launcher.launch("image/*") }
+                shape = RoundedCornerShape(28.dp),
+                onClick = { launcher.launch("image/*") },
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     if (imageUri != null) {
@@ -142,7 +165,12 @@ fun AddEditResepScreen(
                 value = judul,
                 onValueChange = { judul = it },
                 label = { Text("Judul Resep") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                )
             )
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -152,7 +180,12 @@ fun AddEditResepScreen(
                 onValueChange = { bahan = it },
                 label = { Text("Bahan-bahan") },
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 3
+                minLines = 3,
+                shape = RoundedCornerShape(24.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                )
             )
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -162,7 +195,12 @@ fun AddEditResepScreen(
                 onValueChange = { langkah = it },
                 label = { Text("Langkah-langkah") },
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 5
+                minLines = 5,
+                shape = RoundedCornerShape(24.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                )
             )
             
             Spacer(modifier = Modifier.height(32.dp))
@@ -194,15 +232,33 @@ fun AddEditResepScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
+                    .height(56.dp),
+                shape = RoundedCornerShape(28.dp),
                 enabled = !isLoading && judul.isNotEmpty() && bahan.isNotEmpty() && langkah.isNotEmpty()
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
                 } else {
-                    Text(if (isEdit) "SIMPAN PERUBAHAN" else "TAMBAH RESEP", fontWeight = FontWeight.Bold)
+                    Text(if (isEdit) "SIMPAN PERUBAHAN" else "TAMBAH RESEP", fontWeight = FontWeight.ExtraBold)
                 }
             }
         }
+    }
+
+    if (showDialog) {
+        CuteDialog(
+            title = dialogTitle,
+            message = dialogMessage,
+            onDismiss = { 
+                showDialog = false 
+                if (isSuccessAction) navController.popBackStack()
+            },
+            onConfirm = { 
+                showDialog = false 
+                if (isSuccessAction) navController.popBackStack()
+            },
+            confirmText = "MANTAP",
+            icon = dialogIcon
+        )
     }
 }

@@ -117,4 +117,8 @@ class ResepkuViewModel : ViewModel() {
             }
         }
     }
+
+    fun clearErrorMessage() {
+        _errorMessage.value = ""
+    }
 }

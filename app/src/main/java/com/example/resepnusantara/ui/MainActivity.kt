@@ -19,6 +19,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.resepnusantara.ui.navigation.NavGraph
 import com.example.resepnusantara.ui.navigation.Screen
 import com.example.resepnusantara.ui.theme.ResepNusantaraTheme
@@ -29,6 +30,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var sessionManager: SessionManager
     
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         sessionManager = SessionManager(this)
         
@@ -67,27 +69,19 @@ fun MainApp(sessionManager: SessionManager) {
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                BottomAppBar(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                ) {
-                    items.forEach { item ->
-                        NavigationBarItem(
-                            icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) },
-                            selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
-                            onClick = {
-                                navController.navigate(item.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
+                com.example.resepnusantara.ui.components.CustomBottomNavigation(
+                    items = items,
+                    currentRoute = currentDestination?.route,
+                    onItemClick = { item ->
+                        navController.navigate(item.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
                             }
-                        )
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
-                }
+                )
             }
         }
     ) { innerPadding ->

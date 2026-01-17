@@ -19,7 +19,7 @@ object ImageUtils {
         return Base64.encodeToString(byteArray, Base64.NO_WRAP)
     }
     
-    private const val BASE_IMAGE_URL = "http://10.0.2.2/backend/uploads/"
+    private const val BASE_IMAGE_URL = "http://192.168.0.113/backend/uploads/resep/"
     
     /**
      * Mendapatkan URL lengkap untuk foto resep
